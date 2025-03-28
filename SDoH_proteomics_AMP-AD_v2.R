@@ -115,8 +115,7 @@ contrasts_fit <- eBayes(contrasts_fit)
 stats_df.orig <- topTable(contrasts_fit, number = nrow(prot_sel_sbj)) %>%
   tibble::rownames_to_column("Gene")
 stats_df_all <- merge(sdoh.orig, stats_df.orig, all=TRUE) # include missing genes
-stats_df <- merge(sdoh, stats_df.orig, all=TRUE) %>% # includes only results
-  dplyr::mutate(FoldChange = 2^logFC - 1)
+stats_df <- merge(sdoh, stats_df.orig, all=TRUE) # includes only results
 
 stats_df_sig <- stats_df %>%
   dplyr::filter(adj.P.Val < .05)
