@@ -133,7 +133,7 @@ volcano_plot <- EnhancedVolcano::EnhancedVolcano(stats_df,
                                                  subtitle ="AD vs. Control in ROSMAP",
                                                  xlab = bquote(~Log[2]~ 'fold change'),
                                                  pCutoff = 0.05,
-                                                 FCcutoff = .3,
+                                                 FCcutoff = 4,
                                                  pointSize = 4.0,
                                                  labSize = 2.0,
                                                  colAlpha = 0.5,
@@ -159,34 +159,3 @@ ggsave(
 
 ###############################################################################
 
-volcano_plot_FC2 <- EnhancedVolcano::EnhancedVolcano(stats_df,
-                                                 lab = stats_df$Gene, 
-                                                 x = "logFC", 
-                                                 y = "P.Value", 
-                                                 subtitle ="AD vs. Control in ROSMAP",
-                                                 xlab = bquote(~Log[2]~ 'fold change'),
-                                                 pCutoff = 0.05,
-                                                 FCcutoff = 2,
-                                                 pointSize = 4.0,
-                                                 labSize = 2.0,
-                                                 colAlpha = 0.5,
-                                                 xlim= c(-3,3),
-                                                 ylim= c(0,10),
-                                                 legendPosition = 'top',
-                                                 legendLabSize = 12,
-                                                 legendIconSize = 4.0,
-                                                 drawConnectors = TRUE,
-                                                 widthConnectors = 0.35,
-                                                 arrowheads = FALSE
-)
-# Print out our plot
-volcano_plot_FC2
-
-# Save plot using `ggsave()` function
-ggsave(
-  file.path(paste0(dir,"mamourie/ShenLab/SDoH/SDoH_VolcanoPlot_ROSMAP_v3_FC2.png")),
-  plot = volcano_plot_FC2, # The plot object that we want saved to file
-  bg = 'white'
-)
-
-###############################################################################
