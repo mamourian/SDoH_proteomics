@@ -5,8 +5,10 @@ library(EnhancedVolcano)
 
 ###############################################################################
 # Read Data
-dir <- "/Users/mamourie/Library/CloudStorage/Box-Box/"
-dir_ROSMAP <- "/Users/mamourie/Library/CloudStorage/Box-Box/Elizabeth-Project-Data/ROSMAP/"
+# dir <- "/Users/mamourie/Library/CloudStorage/Box-Box/"
+# dir_ROSMAP <- "/Users/mamourie/Library/CloudStorage/Box-Box/Elizabeth-Project-Data/ROSMAP/"
+dir <- "/Users/elizabethmamourian/Library/CloudStorage/Box-Box/"
+dir_ROSMAP <- "/Users/elizabethmamourian/Library/CloudStorage/Box-Box/Elizabeth-Project-Data/ROSMAP/"
 
 ## SDoH genes of interest
 sdoh.orig <- readxl::read_xlsx(paste0(dir,"mamourie/ShenLab/SDoH/potential_edges_gene_sdoh(TZedited).xlsx"), sheet= "unique genes")
@@ -70,6 +72,10 @@ clin_order <- merge(clin, prot_order) %>%
 clin_order$SampleID[1:10]
 names(prot_sel_sbj)[1:10]
 
+## Add pseudo count to avoid log(0)
+prot_sel_sbj_orig <- prot_sel_sbj
+prot_sel_sbj <- log2(prot_sel_sbj_orig + 1)  
+
 
 ###############################################################################
 # We will use the `lmFit()` function from the `limma` package to test each gene 
@@ -115,26 +121,23 @@ stats_df_sig <- stats_df %>%
   dplyr::filter(adj.P.Val < .05)
 
 ## Write output
-write.csv(stats_df, paste0(dir,"mamourie/ShenLab/SDoH/SDoH_differentialAbundance_ROSMAP_v2.csv"), row.names = FALSE)
+write.csv(stats_df, paste0(dir,"mamourie/ShenLab/SDoH/SDoH_differentialAbundance_ROSMAP_v3.csv"), row.names = FALSE)
 
 
 ###############################################################################
 
-stats_df$logFC_norm <- stats_df$logFC/.1 # scales log2 Fold Change
-
-
 volcano_plot <- EnhancedVolcano::EnhancedVolcano(stats_df,
                                                  lab = stats_df$Gene, 
-                                                 x = "logFC_norm", 
+                                                 x = "logFC", 
                                                  y = "P.Value", 
                                                  subtitle ="AD vs. Control in ROSMAP",
                                                  xlab = bquote(~Log[2]~ 'fold change'),
                                                  pCutoff = 0.05,
-                                                 FCcutoff = 1,
+                                                 FCcutoff = .3,
                                                  pointSize = 4.0,
                                                  labSize = 2.0,
                                                  colAlpha = 0.5,
-                                                  xlim= c(-3,3),
+                                                  xlim= c(-1,1),
                                                   ylim= c(0,10),
                                                  legendPosition = 'top',
                                                  legendLabSize = 12,
@@ -148,10 +151,42 @@ volcano_plot
 
 # Save plot using `ggsave()` function
 ggsave(
-  file.path(paste0(dir,"mamourie/ShenLab/SDoH/SDoH_VolcanoPlot_ROSMAP_v2.png")),
+  file.path(paste0(dir,"mamourie/ShenLab/SDoH/SDoH_VolcanoPlot_ROSMAP_v3.png")),
   plot = volcano_plot, # The plot object that we want saved to file
   bg = 'white'
 )
 
+
+###############################################################################
+
+volcano_plot_FC2 <- EnhancedVolcano::EnhancedVolcano(stats_df,
+                                                 lab = stats_df$Gene, 
+                                                 x = "logFC", 
+                                                 y = "P.Value", 
+                                                 subtitle ="AD vs. Control in ROSMAP",
+                                                 xlab = bquote(~Log[2]~ 'fold change'),
+                                                 pCutoff = 0.05,
+                                                 FCcutoff = 2,
+                                                 pointSize = 4.0,
+                                                 labSize = 2.0,
+                                                 colAlpha = 0.5,
+                                                 xlim= c(-3,3),
+                                                 ylim= c(0,10),
+                                                 legendPosition = 'top',
+                                                 legendLabSize = 12,
+                                                 legendIconSize = 4.0,
+                                                 drawConnectors = TRUE,
+                                                 widthConnectors = 0.35,
+                                                 arrowheads = FALSE
+)
+# Print out our plot
+volcano_plot_FC2
+
+# Save plot using `ggsave()` function
+ggsave(
+  file.path(paste0(dir,"mamourie/ShenLab/SDoH/SDoH_VolcanoPlot_ROSMAP_v3_FC2.png")),
+  plot = volcano_plot_FC2, # The plot object that we want saved to file
+  bg = 'white'
+)
 
 ###############################################################################
